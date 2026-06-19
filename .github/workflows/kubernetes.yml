@@ -1,0 +1,38 @@
+name: Kubernetes
+
+on:
+  push:
+    branches: [main]
+    paths: ['kubernetes-project/**']
+  pull_request:
+    paths: ['kubernetes-project/**']
+
+jobs:
+  lint:
+    name: Lint manifests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install kubeval
+        run: |
+          curl -sSL \
+            https://github.com/instrumenta/kubeval/releases/latest/download/kubeval-linux-amd64.tar.gz \
+            | tar xz
+          sudo mv kubeval /usr/local/bin/
+      - name: Validate YAML manifests
+        run: kubeval kubernetes-project/manifests/*.yaml
+
+  dry-run:
+    name: Dry run
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/setup-kubectl@v3
+        with:
+          version: v1.29.0
+      - name: kubectl dry run
+        run: |
+          kubectl apply \
+            --dry-run=client \
+            -f kubernetes-project/manifests/
