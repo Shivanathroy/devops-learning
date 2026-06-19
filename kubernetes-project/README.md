@@ -7,3 +7,4 @@ kubectl apply -f manifests/namespace.yaml
 kubectl apply -f manifests/
 kubectl get pods -n dev
 ```
+updated
