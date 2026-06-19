@@ -7,3 +7,4 @@ terraform init
 terraform plan -var-file="envs/dev.tfvars"
 terraform apply -var-file="envs/dev.tfvars"
 ```
+updated
