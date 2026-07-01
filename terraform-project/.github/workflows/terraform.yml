@@ -1,31 +1,36 @@
 name: Terraform
+
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
+
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   terraform:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: terraform-project
-    env:
-      ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-      ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
-      ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
-      ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-      TF_VAR_tenant_id: ${{ secrets.ARM_TENANT_ID }}
+
     steps:
       - uses: actions/checkout@v4
+
       - uses: hashicorp/setup-terraform@v3
-      - name: Debug secret presence
-        run: |
-          echo "Client ID set: ${{ secrets.ARM_CLIENT_ID != '' }}"
-          echo "Client Secret set: ${{ secrets.ARM_CLIENT_SECRET != '' }}"
-          echo "Tenant ID set: ${{ secrets.ARM_TENANT_ID != '' }}"
-          echo "Subscription ID set: ${{ secrets.ARM_SUBSCRIPTION_ID != '' }}"
-      - run: terraform fmt -check -recursive
-      - run: terraform init
-      - run: terraform validate
-      - run: terraform plan -var-file="envs/dev.tfvars"
+
+      - name: Azure Login (OIDC)
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.ARM_CLIENT_ID }}
+          tenant-id: ${{ secrets.ARM_TENANT_ID }}
+          subscription-id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        run: terraform plan -var-file="envs/dev.tfvars"
