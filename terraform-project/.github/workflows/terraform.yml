@@ -13,6 +13,8 @@ permissions:
 jobs:
   terraform:
     runs-on: ubuntu-latest
+    # ⚠️ CRITICAL ADDITION: This opens access to your environment secrets!
+    environment: terrafrom_secrete  
 
     steps:
       - name: Checkout Code
@@ -43,7 +45,6 @@ jobs:
         run: terraform validate
 
       - name: Terraform Plan
-        # Automatically picks up your root terraform.tfvars file
         run: terraform plan
         env:
           ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
