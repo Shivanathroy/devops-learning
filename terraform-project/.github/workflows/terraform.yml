@@ -1,8 +1,10 @@
-name: Terraform
+name: Terraform CI/CD (OIDC)
 
 on:
   push:
-    branches: [main]
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 permissions:
   id-token: write
@@ -13,12 +15,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      # 1. Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v4
 
+      # 2. Setup Terraform
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
+      # 3. Azure Login using OIDC (NO SECRET PASSWORD)
       - name: Azure Login (OIDC)
         uses: azure/login@v1
         with:
@@ -26,14 +31,22 @@ jobs:
           tenant-id: ${{ secrets.ARM_TENANT_ID }}
           subscription-id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
 
+      # 4. Verify Azure login (IMPORTANT DEBUG STEP)
       - name: Verify Azure Login
         run: az account show
 
+      # 5. Terraform Init (OIDC enabled)
       - name: Terraform Init
+        env:
+          ARM_USE_OIDC: true
         run: terraform init
 
+      # 6. Terraform Validate
       - name: Terraform Validate
         run: terraform validate
 
+      # 7. Terraform Plan
       - name: Terraform Plan
+        env:
+          ARM_USE_OIDC: true
         run: terraform plan -var-file="envs/dev.tfvars"
