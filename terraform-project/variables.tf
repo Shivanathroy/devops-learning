@@ -18,10 +18,6 @@ variable "location" {
   description = "The location of the resource"
   type        = string
 }
-provider "azuread" {
-  tenant_id = var.tenant_id
-}
-
 variable "tenant_id" {
   type        = string
   description = "Azure AD tenant ID"
