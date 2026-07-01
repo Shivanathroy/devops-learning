@@ -4,21 +4,28 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch: # Allows you to manually trigger it from the UI
+  workflow_dispatch:
 
 permissions:
-  id-token: write  # Critical for Azure OIDC authentication
-  contents: read   # Allows checking out your code
+  id-token: write
+  contents: read
 
 jobs:
   terraform:
     name: Run Terraform Plan
     runs-on: ubuntu-latest
     
-    # Force GitHub to run commands inside your subfolder where main.tf lives
     defaults:
       run:
         working-directory: ./terraform-project
+
+    # Defining variables here covers init, validate, and plan all at once
+    env:
+      ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+      ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+      ARM_USE_OIDC: true
+      ARM_USE_AZUREAD: true
 
     steps:
       - name: Checkout Code
@@ -27,25 +34,13 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.8.0 # Adjust to match your local version if needed
+          terraform_version: 1.8.0
 
       - name: Terraform Init
         run: terraform init
-        env:
-          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
-          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-          ARM_USE_OIDC: true
-          ARM_USE_AZUREAD: true
 
       - name: Terraform Validate
         run: terraform validate
 
       - name: Terraform Plan
         run: terraform plan
-        env:
-          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
-          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-          ARM_USE_OIDC: true
-          ARM_USE_AZUREAD: true
