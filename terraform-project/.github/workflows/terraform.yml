@@ -9,7 +9,7 @@ jobs:
   terraform:
     runs-on: ubuntu-latest
 
-    # 👇 THIS IS THE KEY FIX
+    # 🔥 CRITICAL FIX (GLOBAL SCOPE)
     env:
       ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
       ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
