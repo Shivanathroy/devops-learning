@@ -1,11 +1,9 @@
 name: Terraform
-
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
-
 jobs:
   terraform:
     runs-on: ubuntu-latest
@@ -21,6 +19,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: hashicorp/setup-terraform@v3
+      - name: Debug secret presence
+        run: |
+          echo "Client ID set: ${{ secrets.ARM_CLIENT_ID != '' }}"
+          echo "Client Secret set: ${{ secrets.ARM_CLIENT_SECRET != '' }}"
+          echo "Tenant ID set: ${{ secrets.ARM_TENANT_ID != '' }}"
+          echo "Subscription ID set: ${{ secrets.ARM_SUBSCRIPTION_ID != '' }}"
       - run: terraform fmt -check -recursive
       - run: terraform init
       - run: terraform validate

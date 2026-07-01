@@ -17,8 +17,10 @@ terraform {
 
 provider "azurerm" {
   features {}
+  use_cli = false
 }
 
 provider "azuread" {
   tenant_id = var.tenant_id
+  use_cli   = false
 }
