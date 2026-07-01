@@ -43,7 +43,8 @@ jobs:
         run: terraform validate
 
       - name: Terraform Plan
-        # Note: If your file is terraform.tfvars in the root, change this to "terraform.tfvars"
+        # Note: If your file is terraform.tfvars in the root instead of envs/dev.tfvars,
+        # update the filename right here:
         run: terraform plan -var-file="envs/dev.tfvars"
         env:
           ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
