@@ -19,12 +19,4 @@ provider "azurerm" {
   features {}
 }
 
-provider "azuread" {
-  tenant_id = var.tenant_id
-}
-
-variable "tenant_id" {
-  type        = string
-  description = "Azure AD tenant ID"
-}
-}
+provider "azuread" {}
