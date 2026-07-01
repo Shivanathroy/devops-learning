@@ -13,8 +13,7 @@ permissions:
 jobs:
   terraform:
     runs-on: ubuntu-latest
-    # ⚠️ CRITICAL ADDITION: This opens access to your environment secrets!
-    environment: terrafrom_secrete  
+    environment: terrafrom_secrete
 
     steps:
       - name: Checkout Code
